@@ -14,8 +14,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.jort.stockcontrolpm.data.local.database.AppDatabase
+import com.jort.stockcontrolpm.data.remote.client.RetrofitClient
+import com.jort.stockcontrolpm.data.repository.ApiInfoRepository
 import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoScreen
+import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoViewModel
+import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoViewModelFactory
 import com.jort.stockcontrolpm.ui.screens.dashboard.DashboardScreen
 import com.jort.stockcontrolpm.ui.screens.dashboard.DashboardViewModel
 import com.jort.stockcontrolpm.ui.screens.dashboard.DashboardViewModelFactory
@@ -35,6 +39,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val database = remember(context) { AppDatabase.getInstance(context) }
     val productRepository = remember(database) { ProductRepository(database.productDao()) }
+    val apiInfoRepository = remember {
+        ApiInfoRepository(RetrofitClient.fakeStoreApiService)
+    }
 
     fun navigateToDashboard() {
         navController.navigate(AppRoutes.DASHBOARD) {
@@ -168,8 +175,19 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             )
         }
 
-        composable(AppRoutes.API_INFO) {
+        composable(AppRoutes.API_INFO) { backStackEntry ->
+            val apiInfoViewModel = remember(backStackEntry, apiInfoRepository) {
+                ViewModelProvider(
+                    backStackEntry,
+                    ApiInfoViewModelFactory(apiInfoRepository)
+                )[ApiInfoViewModel::class.java]
+            }
+            val uiState by apiInfoViewModel.uiState.collectAsState()
+
             ApiInfoScreen(
+                uiState = uiState,
+                onRetryClick = apiInfoViewModel::loadExternalProducts,
+                onClearError = apiInfoViewModel::clearError,
                 onDashboardClick = { navigateToDashboard() },
                 onProductsClick = { navController.navigate(AppRoutes.PRODUCTS) }
             )
