@@ -5,7 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavType
@@ -13,8 +12,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.jort.stockcontrolpm.data.local.database.AppDatabase
-import com.jort.stockcontrolpm.data.remote.client.RetrofitClient
 import com.jort.stockcontrolpm.data.repository.ApiInfoRepository
 import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoScreen
@@ -33,15 +30,16 @@ import com.jort.stockcontrolpm.ui.screens.products.ProductListScreen
 import com.jort.stockcontrolpm.ui.screens.products.ProductListViewModel
 import com.jort.stockcontrolpm.ui.screens.products.ProductListViewModelFactory
 
+// Los repositorios se reciben como parámetros: AppNavigation no construye
+// ni conoce la base de datos ni el cliente de red. Esa responsabilidad
+// pertenece a MainActivity, que es un componente Android, no una vista.
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier) {
+fun AppNavigation(
+    productRepository: ProductRepository,
+    apiInfoRepository: ApiInfoRepository,
+    modifier: Modifier = Modifier
+) {
     val navController = rememberNavController()
-    val context = LocalContext.current
-    val database = remember(context) { AppDatabase.getInstance(context) }
-    val productRepository = remember(database) { ProductRepository(database.productDao()) }
-    val apiInfoRepository = remember {
-        ApiInfoRepository(RetrofitClient.fakeStoreApiService)
-    }
 
     fun navigateToDashboard() {
         navController.navigate(AppRoutes.DASHBOARD) {
