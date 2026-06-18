@@ -17,6 +17,8 @@ import com.jort.stockcontrolpm.data.local.database.AppDatabase
 import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoScreen
 import com.jort.stockcontrolpm.ui.screens.dashboard.DashboardScreen
+import com.jort.stockcontrolpm.ui.screens.dashboard.DashboardViewModel
+import com.jort.stockcontrolpm.ui.screens.dashboard.DashboardViewModelFactory
 import com.jort.stockcontrolpm.ui.screens.products.ProductDetailScreen
 import com.jort.stockcontrolpm.ui.screens.products.ProductDetailViewModel
 import com.jort.stockcontrolpm.ui.screens.products.ProductDetailViewModelFactory
@@ -48,8 +50,18 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         startDestination = AppRoutes.DASHBOARD,
         modifier = modifier
     ) {
-        composable(AppRoutes.DASHBOARD) {
+        composable(AppRoutes.DASHBOARD) { backStackEntry ->
+            val dashboardViewModel = remember(backStackEntry, productRepository) {
+                ViewModelProvider(
+                    backStackEntry,
+                    DashboardViewModelFactory(productRepository)
+                )[DashboardViewModel::class.java]
+            }
+            val uiState by dashboardViewModel.uiState.collectAsState()
+
             DashboardScreen(
+                uiState = uiState,
+                onClearError = dashboardViewModel::clearError,
                 onProductsClick = { navController.navigate(AppRoutes.PRODUCTS) },
                 onApiInfoClick = { navController.navigate(AppRoutes.API_INFO) }
             )

@@ -3,6 +3,9 @@ package com.jort.stockcontrolpm.ui.screens.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jort.stockcontrolpm.data.repository.ProductRepository
+import com.jort.stockcontrolpm.domain.model.Product
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,6 +43,7 @@ class DashboardViewModel(
                             totalProducts = products.size,
                             outOfStockProducts = products.count { product -> product.isOutOfStock },
                             criticalStockProducts = products.count { product -> product.isCriticalStock },
+                            expiringSoonProducts = products.count { product -> product.isExpiringSoon() },
                             inventoryValue = products.sumOf { product -> product.inventoryValue }
                         )
                     }
@@ -50,5 +54,15 @@ class DashboardViewModel(
     fun clearError() {
         _uiState.update { state -> state.copy(errorMessage = null) }
     }
-}
 
+    private fun Product.isExpiringSoon(): Boolean {
+        val date = expirationDate ?: return false
+        return try {
+            val expiration = LocalDate.parse(date)
+            val today = LocalDate.now()
+            !expiration.isBefore(today) && !expiration.isAfter(today.plusDays(30))
+        } catch (_: DateTimeParseException) {
+            false
+        }
+    }
+}

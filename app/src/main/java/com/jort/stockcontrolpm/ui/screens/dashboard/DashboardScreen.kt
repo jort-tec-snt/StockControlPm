@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -19,6 +20,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DashboardScreen(
+    uiState: DashboardUiState,
+    onClearError: () -> Unit,
     onProductsClick: () -> Unit,
     onApiInfoClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -38,36 +41,66 @@ fun DashboardScreen(
             style = MaterialTheme.typography.bodyLarge
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            DashboardMetricCard(
-                title = "Productos",
-                value = "0",
-                modifier = Modifier.weight(1f)
-            )
-            DashboardMetricCard(
-                title = "Agotados",
-                value = "0",
-                modifier = Modifier.weight(1f)
-            )
-        }
+        when {
+            uiState.isLoading -> {
+                CircularProgressIndicator()
+            }
+            uiState.errorMessage != null -> {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "No se pudo cargar el dashboard",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(text = uiState.errorMessage)
+                        OutlinedButton(onClick = onClearError) {
+                            Text(text = "Entendido")
+                        }
+                    }
+                }
+            }
+            else -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    DashboardMetricCard(
+                        title = "Productos",
+                        value = uiState.totalProducts.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
+                    DashboardMetricCard(
+                        title = "Agotados",
+                        value = uiState.outOfStockProducts.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            DashboardMetricCard(
-                title = "Criticos",
-                value = "0",
-                modifier = Modifier.weight(1f)
-            )
-            DashboardMetricCard(
-                title = "Valor",
-                value = "S/ 0.00",
-                modifier = Modifier.weight(1f)
-            )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    DashboardMetricCard(
+                        title = "Criticos",
+                        value = uiState.criticalStockProducts.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
+                    DashboardMetricCard(
+                        title = "Por vencer",
+                        value = uiState.expiringSoonProducts.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                DashboardMetricCard(
+                    title = "Inventario valorizado",
+                    value = "S/ %.2f".format(uiState.inventoryValue),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -107,4 +140,3 @@ private fun DashboardMetricCard(
         }
     }
 }
-
