@@ -1,6 +1,7 @@
 package com.jort.stockcontrolpm.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -17,7 +18,11 @@ import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoScreen
 import com.jort.stockcontrolpm.ui.screens.dashboard.DashboardScreen
 import com.jort.stockcontrolpm.ui.screens.products.ProductDetailScreen
+import com.jort.stockcontrolpm.ui.screens.products.ProductDetailViewModel
+import com.jort.stockcontrolpm.ui.screens.products.ProductDetailViewModelFactory
 import com.jort.stockcontrolpm.ui.screens.products.ProductFormScreen
+import com.jort.stockcontrolpm.ui.screens.products.ProductFormViewModel
+import com.jort.stockcontrolpm.ui.screens.products.ProductFormViewModelFactory
 import com.jort.stockcontrolpm.ui.screens.products.ProductListScreen
 import com.jort.stockcontrolpm.ui.screens.products.ProductListViewModel
 import com.jort.stockcontrolpm.ui.screens.products.ProductListViewModelFactory
@@ -78,11 +83,31 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             )
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getLong(AppRoutes.PRODUCT_ID_ARGUMENT) ?: 0L
+            val detailViewModel = remember(backStackEntry, productRepository) {
+                ViewModelProvider(
+                    backStackEntry,
+                    ProductDetailViewModelFactory(productRepository)
+                )[ProductDetailViewModel::class.java]
+            }
+            val uiState by detailViewModel.uiState.collectAsState()
+
+            LaunchedEffect(productId) {
+                detailViewModel.loadProduct(productId)
+            }
+            LaunchedEffect(uiState.wasDeleted) {
+                if (uiState.wasDeleted) {
+                    navController.popBackStack()
+                }
+            }
+
             ProductDetailScreen(
                 productId = productId,
+                uiState = uiState,
                 onEditClick = { selectedProductId ->
                     navController.navigate(AppRoutes.productForm(selectedProductId))
                 },
+                onDeleteClick = detailViewModel::deleteProduct,
+                onClearError = detailViewModel::clearError,
                 onBackClick = { navController.popBackStack() },
                 onDashboardClick = { navigateToDashboard() }
             )
@@ -98,9 +123,34 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             )
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getLong(AppRoutes.PRODUCT_ID_ARGUMENT) ?: -1L
+            val formProductId = productId.takeIf { it != -1L }
+            val formViewModel = remember(backStackEntry, productRepository) {
+                ViewModelProvider(
+                    backStackEntry,
+                    ProductFormViewModelFactory(productRepository)
+                )[ProductFormViewModel::class.java]
+            }
+            val uiState by formViewModel.uiState.collectAsState()
+
+            LaunchedEffect(formProductId) {
+                formViewModel.loadProduct(formProductId)
+            }
+            LaunchedEffect(uiState.wasSaved) {
+                if (uiState.wasSaved) {
+                    navController.popBackStack()
+                }
+            }
+
             ProductFormScreen(
-                productId = productId.takeIf { it != -1L },
-                onSaveClick = { navController.popBackStack() },
+                uiState = uiState,
+                onNameChange = formViewModel::onNameChange,
+                onCategoryChange = formViewModel::onCategoryChange,
+                onStockChange = formViewModel::onStockChange,
+                onMinStockChange = formViewModel::onMinStockChange,
+                onUnitPriceChange = formViewModel::onUnitPriceChange,
+                onExpirationDateChange = formViewModel::onExpirationDateChange,
+                onSaveClick = formViewModel::saveProduct,
+                onClearError = formViewModel::clearError,
                 onBackClick = { navController.popBackStack() },
                 onDashboardClick = { navigateToDashboard() }
             )

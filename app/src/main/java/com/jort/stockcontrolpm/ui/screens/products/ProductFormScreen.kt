@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -16,14 +18,20 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ProductFormScreen(
-    productId: Long?,
+    uiState: ProductFormUiState,
+    onNameChange: (String) -> Unit,
+    onCategoryChange: (String) -> Unit,
+    onStockChange: (String) -> Unit,
+    onMinStockChange: (String) -> Unit,
+    onUnitPriceChange: (String) -> Unit,
+    onExpirationDateChange: (String) -> Unit,
     onSaveClick: () -> Unit,
+    onClearError: () -> Unit,
     onBackClick: () -> Unit,
     onDashboardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isEditing = productId != null
-    val title = if (isEditing) "Editar producto" else "Nuevo producto"
+    val title = if (uiState.isEditing) "Editar producto" else "Nuevo producto"
 
     Column(
         modifier = modifier
@@ -40,34 +48,77 @@ fun ProductFormScreen(
             style = MaterialTheme.typography.bodyLarge
         )
 
+        if (uiState.isLoading) {
+            CircularProgressIndicator()
+        }
+
+        if (uiState.errorMessage != null) {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Revisa el formulario",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(text = uiState.errorMessage)
+                    OutlinedButton(onClick = onClearError) {
+                        Text(text = "Entendido")
+                    }
+                }
+            }
+        }
+
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = uiState.name,
+            onValueChange = onNameChange,
             label = { Text(text = "Nombre") },
-            enabled = false,
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = uiState.category,
+            onValueChange = onCategoryChange,
+            label = { Text(text = "Categoria") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = uiState.stock,
+            onValueChange = onStockChange,
             label = { Text(text = "Stock") },
-            enabled = false,
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = uiState.minStock,
+            onValueChange = onMinStockChange,
+            label = { Text(text = "Stock minimo") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = uiState.unitPrice,
+            onValueChange = onUnitPriceChange,
             label = { Text(text = "Precio") },
-            enabled = false,
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = uiState.expirationDate,
+            onValueChange = onExpirationDateChange,
+            label = { Text(text = "Fecha de vencimiento") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Button(
             onClick = onSaveClick,
             modifier = Modifier.fillMaxWidth(),
-            enabled = false
+            enabled = !uiState.isLoading && !uiState.isSaving
         ) {
-            Text(text = if (isEditing) "Guardar cambios" else "Registrar producto")
+            Text(
+                text = when {
+                    uiState.isSaving -> "Guardando..."
+                    uiState.isEditing -> "Guardar cambios"
+                    else -> "Registrar producto"
+                }
+            )
         }
         OutlinedButton(
             onClick = onBackClick,

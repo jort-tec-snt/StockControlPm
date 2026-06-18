@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -17,7 +18,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ProductDetailScreen(
     productId: Long,
+    uiState: ProductDetailUiState,
     onEditClick: (Long) -> Unit,
+    onDeleteClick: () -> Unit,
+    onClearError: () -> Unit,
     onBackClick: () -> Unit,
     onDashboardClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -37,27 +41,66 @@ fun ProductDetailScreen(
             style = MaterialTheme.typography.bodyLarge
         )
 
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = "Producto seleccionado",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(text = "ID: $productId")
-                Text(text = "Stock: pendiente de conectar")
-                Text(text = "Precio: pendiente de conectar")
-                Text(text = "Vencimiento: pendiente de conectar")
+        when {
+            uiState.isLoading -> {
+                CircularProgressIndicator()
+            }
+            uiState.errorMessage != null -> {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "No se pudo cargar el producto",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(text = uiState.errorMessage)
+                        OutlinedButton(onClick = onClearError) {
+                            Text(text = "Entendido")
+                        }
+                    }
+                }
+            }
+            uiState.product != null -> {
+                val product = uiState.product
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = product.name,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(text = "ID: ${product.id}")
+                        Text(text = "Categoria: ${product.category}")
+                        Text(text = "Stock: ${product.stock}")
+                        Text(text = "Stock minimo: ${product.minStock}")
+                        Text(text = "Precio: S/ ${product.unitPrice}")
+                        Text(text = "Valor inventario: S/ ${product.inventoryValue}")
+                        Text(text = "Vencimiento: ${product.expirationDate ?: "Sin fecha"}")
+                    }
+                }
+            }
+            else -> {
+                Text(text = "Producto no encontrado.")
             }
         }
 
         Button(
             onClick = { onEditClick(productId) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState.product != null
         ) {
             Text(text = "Editar producto")
+        }
+        OutlinedButton(
+            onClick = onDeleteClick,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState.product != null
+        ) {
+            Text(text = "Eliminar producto")
         }
         OutlinedButton(
             onClick = onBackClick,
