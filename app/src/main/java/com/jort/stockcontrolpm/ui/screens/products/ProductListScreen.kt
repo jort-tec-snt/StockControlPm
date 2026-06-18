@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 fun ProductListScreen(
     onCreateProductClick: () -> Unit,
     onProductClick: (Long) -> Unit,
+    onDashboardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -55,6 +56,12 @@ fun ProductListScreen(
         ) {
             Text(text = "Nuevo producto")
         }
+        OutlinedButton(
+            onClick = onDashboardClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Volver al inicio")
+        }
     }
 }
 
@@ -84,4 +91,3 @@ private fun EmptyProductListCard(
         }
     }
 }
-

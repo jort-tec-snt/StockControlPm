@@ -19,6 +19,7 @@ fun ProductDetailScreen(
     productId: Long,
     onEditClick: (Long) -> Unit,
     onBackClick: () -> Unit,
+    onDashboardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -64,6 +65,11 @@ fun ProductDetailScreen(
         ) {
             Text(text = "Volver")
         }
+        OutlinedButton(
+            onClick = onDashboardClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Volver al inicio")
+        }
     }
 }
-

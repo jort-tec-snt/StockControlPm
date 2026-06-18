@@ -19,6 +19,7 @@ fun ProductFormScreen(
     productId: Long?,
     onSaveClick: () -> Unit,
     onBackClick: () -> Unit,
+    onDashboardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isEditing = productId != null
@@ -74,6 +75,11 @@ fun ProductFormScreen(
         ) {
             Text(text = "Volver")
         }
+        OutlinedButton(
+            onClick = onDashboardClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Volver al inicio")
+        }
     }
 }
-

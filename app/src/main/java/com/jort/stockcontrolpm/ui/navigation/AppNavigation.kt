@@ -17,6 +17,15 @@ import com.jort.stockcontrolpm.ui.screens.products.ProductListScreen
 fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
+    fun navigateToDashboard() {
+        navController.navigate(AppRoutes.DASHBOARD) {
+            popUpTo(AppRoutes.DASHBOARD) {
+                inclusive = false
+            }
+            launchSingleTop = true
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = AppRoutes.DASHBOARD,
@@ -32,7 +41,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(AppRoutes.PRODUCTS) {
             ProductListScreen(
                 onCreateProductClick = { navController.navigate(AppRoutes.productForm()) },
-                onProductClick = { productId -> navController.navigate(AppRoutes.productDetail(productId)) }
+                onProductClick = { productId -> navController.navigate(AppRoutes.productDetail(productId)) },
+                onDashboardClick = { navigateToDashboard() }
             )
         }
 
@@ -50,7 +60,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onEditClick = { selectedProductId ->
                     navController.navigate(AppRoutes.productForm(selectedProductId))
                 },
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onDashboardClick = { navigateToDashboard() }
             )
         }
 
@@ -67,13 +78,14 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             ProductFormScreen(
                 productId = productId.takeIf { it != -1L },
                 onSaveClick = { navController.popBackStack() },
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onDashboardClick = { navigateToDashboard() }
             )
         }
 
         composable(AppRoutes.API_INFO) {
             ApiInfoScreen(
-                onDashboardClick = { navController.navigate(AppRoutes.DASHBOARD) },
+                onDashboardClick = { navigateToDashboard() },
                 onProductsClick = { navController.navigate(AppRoutes.PRODUCTS) }
             )
         }
