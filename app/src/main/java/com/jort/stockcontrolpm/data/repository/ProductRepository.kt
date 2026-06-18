@@ -2,8 +2,10 @@ package com.jort.stockcontrolpm.data.repository
 
 import com.jort.stockcontrolpm.data.local.dao.ProductDao
 import com.jort.stockcontrolpm.domain.model.Product
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 class ProductRepository(
     private val productDao: ProductDao
@@ -19,15 +21,21 @@ class ProductRepository(
     }
 
     suspend fun getProductById(productId: Long): Product? {
-        return productDao.getProductById(productId)?.toDomain()
+        return withContext(Dispatchers.IO) {
+            productDao.getProductById(productId)?.toDomain()
+        }
     }
 
     suspend fun createProduct(product: Product): Long {
-        return productDao.insertProduct(product.toEntity())
+        return withContext(Dispatchers.IO) {
+            productDao.insertProduct(product.toEntity())
+        }
     }
 
     suspend fun updateProduct(product: Product) {
-        productDao.updateProduct(product.toEntity())
+        withContext(Dispatchers.IO) {
+            productDao.updateProduct(product.toEntity())
+        }
     }
 
     suspend fun saveProduct(product: Product): Long {
@@ -40,11 +48,14 @@ class ProductRepository(
     }
 
     suspend fun deleteProduct(product: Product) {
-        productDao.deleteProduct(product.toEntity())
+        withContext(Dispatchers.IO) {
+            productDao.deleteProduct(product.toEntity())
+        }
     }
 
     suspend fun deleteProductById(productId: Long) {
-        productDao.deleteProductById(productId)
+        withContext(Dispatchers.IO) {
+            productDao.deleteProductById(productId)
+        }
     }
 }
-

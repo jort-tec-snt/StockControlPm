@@ -19,15 +19,14 @@ internal fun ProductEntity.toDomain(): Product {
 
 internal fun Product.toEntity(): ProductEntity {
     return ProductEntity(
-        id = id,
-        name = name,
-        category = category,
-        stock = stock,
-        minStock = minStock,
-        unitPrice = unitPrice,
-        expirationDate = expirationDate,
-        createdAt = createdAt,
-        updatedAt = updatedAt
+        id,
+        name,
+        category,
+        stock,
+        minStock,
+        unitPrice,
+        expirationDate,
+        createdAt,
+        updatedAt
     )
 }
-
