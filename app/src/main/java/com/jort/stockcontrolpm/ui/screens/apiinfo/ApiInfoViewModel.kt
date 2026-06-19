@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.jort.stockcontrolpm.data.repository.ApiInfoRepository
 import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.domain.model.ExternalProduct
-import com.jort.stockcontrolpm.domain.model.Product
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,27 +42,16 @@ class ApiInfoViewModel(
     fun importProduct(external: ExternalProduct) {
         if (_uiState.value.importedIds.contains(external.id)) return
         viewModelScope.launch {
-            val now = System.currentTimeMillis()
-            val product = Product(
-                id             = 0L,
-                name           = external.title,
-                category       = external.category.replaceFirstChar { it.uppercase() },
-                stock          = 0,
-                minStock       = 5,
-                unitPrice      = external.price,
-                purchasePrice  = null,
-                sku            = "EXT-${external.id}",
-                supplier       = "FakeStore API",
-                expirationDate = null,
-                description    = external.description,
-                createdAt      = now,
-                updatedAt      = now
-            )
-            runCatching { productRepository.saveProduct(product) }
+            runCatching { productRepository.importExternalProducts(listOf(external)) }
                 .onSuccess {
                     _uiState.update { state -> state.copy(
                         importedIds  = state.importedIds + external.id,
                         lastImported = external.title
+                    ) }
+                }
+                .onFailure { throwable ->
+                    _uiState.update { state -> state.copy(
+                        errorMessage = throwable.message ?: "No se pudo importar el producto."
                     ) }
                 }
         }

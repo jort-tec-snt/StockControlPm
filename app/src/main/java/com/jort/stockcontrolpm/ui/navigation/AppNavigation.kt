@@ -154,10 +154,10 @@ fun AppNavigation(
 
             // ── Inventario (lista de productos) ──────────────────────────────
             composable(AppRoutes.INVENTORY) { backStackEntry ->
-                val vm = remember(backStackEntry, productRepository) {
+                val vm = remember(backStackEntry, productRepository, apiInfoRepository) {
                     ViewModelProvider(
                         backStackEntry,
-                        ProductListViewModelFactory(productRepository)
+                        ProductListViewModelFactory(productRepository, apiInfoRepository)
                     )[ProductListViewModel::class.java]
                 }
                 val uiState by vm.uiState.collectAsState()
@@ -167,6 +167,7 @@ fun AppNavigation(
                     onProductClick       = { id -> navController.navigate(AppRoutes.productDetail(id)) },
                     onSearchQueryChange  = vm::onSearchQueryChange,
                     onCategoryChange     = vm::onCategoryChange,
+                    onSyncFromApi        = vm::refreshFromApi,
                     onClearError         = vm::clearError,
                     onDashboardClick     = { navController.navigate(AppRoutes.DASHBOARD) }
                 )

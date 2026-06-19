@@ -7,6 +7,9 @@ data class ProductListUiState(
     val allProducts: List<Product> = emptyList(),
     val searchQuery: String = "",
     val selectedCategory: String? = null,
+    val isSyncingApi: Boolean = false,
+    val apiSyncError: String? = null,
+    val lastImportedCount: Int? = null,
     val errorMessage: String? = null
 ) {
     // Filtrado por categoría y búsqueda aplicados en memoria

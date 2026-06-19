@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -72,6 +73,7 @@ fun ProductListScreen(
     onCreateProductClick: () -> Unit,
     onProductClick: (Long) -> Unit,
     onSearchQueryChange: (String) -> Unit,
+    onSyncFromApi: () -> Unit,
     onClearError: () -> Unit,
     onDashboardClick: () -> Unit,
     onCategoryChange: ((String?) -> Unit)? = null,
@@ -100,7 +102,11 @@ fun ProductListScreen(
             InventoryHeader(
                 totalCount   = uiState.products.size,
                 searchQuery  = uiState.searchQuery,
-                onSearchQueryChange = onSearchQueryChange
+                isSyncingApi = uiState.isSyncingApi,
+                apiSyncError = uiState.apiSyncError,
+                lastImportedCount = uiState.lastImportedCount,
+                onSearchQueryChange = onSearchQueryChange,
+                onSyncFromApi = onSyncFromApi
             )
 
             // ── Category chips ───────────────────────────────────────────────────
@@ -174,7 +180,11 @@ fun ProductListScreen(
 private fun InventoryHeader(
     totalCount: Int,
     searchQuery: String,
-    onSearchQueryChange: (String) -> Unit
+    isSyncingApi: Boolean,
+    apiSyncError: String?,
+    lastImportedCount: Int?,
+    onSearchQueryChange: (String) -> Unit,
+    onSyncFromApi: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -199,6 +209,21 @@ private fun InventoryHeader(
                 fontWeight = FontWeight.ExtraBold,
                 modifier   = Modifier.weight(1f)
             )
+            IconButton(onClick = onSyncFromApi, enabled = !isSyncingApi) {
+                if (isSyncingApi) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Primary,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        Icons.Outlined.Refresh,
+                        contentDescription = "Sincronizar con FakeStore API",
+                        tint = Primary
+                    )
+                }
+            }
             // Badge con conteo
             Box(
                 modifier = Modifier
@@ -215,6 +240,20 @@ private fun InventoryHeader(
                 )
             }
         }
+
+        Text(
+            text = when {
+                isSyncingApi -> "Sincronizando productos desde FakeStore API…"
+                apiSyncError != null -> "No se pudo sincronizar la API: $apiSyncError"
+                lastImportedCount != null && lastImportedCount > 0 ->
+                    "$lastImportedCount productos nuevos importados desde la API"
+                lastImportedCount == 0 -> "Inventario sincronizado con FakeStore API"
+                else -> "Inventario local y catálogo externo"
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color = if (apiSyncError != null) Error else TextMuted,
+            maxLines = 2
+        )
 
         // Barra de búsqueda
         OutlinedTextField(

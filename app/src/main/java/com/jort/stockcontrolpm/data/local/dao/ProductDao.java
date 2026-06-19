@@ -6,6 +6,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
+import androidx.annotation.Nullable;
 
 import com.jort.stockcontrolpm.data.local.entity.ProductEntity;
 
@@ -20,6 +21,10 @@ public interface ProductDao {
 
     @Query("SELECT * FROM products WHERE id = :productId LIMIT 1")
     ProductEntity getProductById(long productId);
+
+    @Nullable
+    @Query("SELECT * FROM products WHERE sku = :sku LIMIT 1")
+    ProductEntity getProductBySku(String sku);
 
     @Query(
             "SELECT * FROM products " +
