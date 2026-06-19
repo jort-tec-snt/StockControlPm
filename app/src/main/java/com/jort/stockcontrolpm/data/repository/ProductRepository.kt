@@ -58,4 +58,10 @@ class ProductRepository(
             productDao.deleteProductById(productId)
         }
     }
+
+    suspend fun countProducts(): Int {
+        return withContext(Dispatchers.IO) {
+            productDao.countProducts()
+        }
+    }
 }
