@@ -3,7 +3,6 @@ package com.jort.stockcontrolpm.ui.screens.products
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jort.stockcontrolpm.data.repository.ProductRepository
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,73 +16,35 @@ class ProductListViewModel(
     private val _uiState = MutableStateFlow(ProductListUiState(isLoading = true))
     val uiState: StateFlow<ProductListUiState> = _uiState.asStateFlow()
 
-    private var productsJob: Job? = null
-
     init {
         observeProducts()
     }
 
-    fun observeProducts() {
-        productsJob?.cancel()
-        productsJob = viewModelScope.launch {
-            _uiState.update { state -> state.copy(isLoading = true, errorMessage = null) }
-
+    private fun observeProducts() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             repository.observeProducts()
                 .catch { throwable ->
-                    _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            errorMessage = throwable.message ?: "No se pudo cargar el inventario."
-                        )
-                    }
+                    _uiState.update { it.copy(
+                        isLoading = false,
+                        errorMessage = throwable.message ?: "No se pudo cargar el inventario."
+                    ) }
                 }
                 .collect { products ->
-                    _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            products = products,
-                            errorMessage = null
-                        )
-                    }
+                    _uiState.update { it.copy(isLoading = false, allProducts = products, errorMessage = null) }
                 }
         }
     }
 
     fun onSearchQueryChange(query: String) {
-        _uiState.update { state -> state.copy(searchQuery = query) }
-        productsJob?.cancel()
-        productsJob = viewModelScope.launch {
-            _uiState.update { state -> state.copy(isLoading = true, errorMessage = null) }
+        _uiState.update { it.copy(searchQuery = query) }
+    }
 
-            val source = if (query.isBlank()) {
-                repository.observeProducts()
-            } else {
-                repository.searchProducts(query.trim())
-            }
-
-            source
-                .catch { throwable ->
-                    _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            errorMessage = throwable.message ?: "No se pudo buscar productos."
-                        )
-                    }
-                }
-                .collect { products ->
-                    _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            products = products,
-                            errorMessage = null
-                        )
-                    }
-                }
-        }
+    fun onCategoryChange(category: String?) {
+        _uiState.update { it.copy(selectedCategory = category) }
     }
 
     fun clearError() {
-        _uiState.update { state -> state.copy(errorMessage = null) }
+        _uiState.update { it.copy(errorMessage = null) }
     }
 }
-

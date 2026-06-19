@@ -155,12 +155,13 @@ fun AppNavigation(
                 }
                 val uiState by vm.uiState.collectAsState()
                 ProductListScreen(
-                    uiState             = uiState,
+                    uiState              = uiState,
                     onCreateProductClick = { navController.navigate(AppRoutes.productForm()) },
                     onProductClick       = { id -> navController.navigate(AppRoutes.productDetail(id)) },
                     onSearchQueryChange  = vm::onSearchQueryChange,
-                    onClearError        = vm::clearError,
-                    onDashboardClick    = { navController.navigate(AppRoutes.DASHBOARD) }
+                    onCategoryChange     = vm::onCategoryChange,
+                    onClearError         = vm::clearError,
+                    onDashboardClick     = { navController.navigate(AppRoutes.DASHBOARD) }
                 )
             }
 
