@@ -18,7 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -33,6 +32,9 @@ import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoScreen
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoViewModel
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoViewModelFactory
+import com.jort.stockcontrolpm.ui.screens.login.LoginScreen
+import com.jort.stockcontrolpm.ui.screens.login.LoginViewModel
+import com.jort.stockcontrolpm.ui.screens.login.LoginViewModelFactory
 import com.jort.stockcontrolpm.ui.screens.dashboard.DashboardScreen
 import com.jort.stockcontrolpm.ui.screens.dashboard.DashboardViewModel
 import com.jort.stockcontrolpm.ui.screens.dashboard.DashboardViewModelFactory
@@ -65,7 +67,7 @@ fun AppNavigation(
 ) {
     val navController = rememberNavController()
 
-    // Rutas que muestran el BottomNav
+    // Rutas que muestran el BottomNav (Login y pantallas de detalle lo ocultan)
     val bottomNavRoutes = setOf(
         AppRoutes.DASHBOARD,
         AppRoutes.INVENTORY,
@@ -98,9 +100,34 @@ fun AppNavigation(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = AppRoutes.DASHBOARD,
+            startDestination = AppRoutes.LOGIN,
             modifier = modifier.padding(innerPadding)
         ) {
+            // ── Login ────────────────────────────────────────────────────────
+            composable(AppRoutes.LOGIN) { backStackEntry ->
+                val vm = remember(backStackEntry) {
+                    ViewModelProvider(
+                        backStackEntry,
+                        LoginViewModelFactory()
+                    )[LoginViewModel::class.java]
+                }
+                val uiState by vm.uiState.collectAsState()
+                LoginScreen(
+                    uiState                  = uiState,
+                    onEmailChange            = vm::onEmailChange,
+                    onPasswordChange         = vm::onPasswordChange,
+                    onRoleChange             = vm::onRoleChange,
+                    onTogglePasswordVisibility = vm::onTogglePasswordVisibility,
+                    onLoginClick             = vm::login,
+                    onLoginSuccess           = {
+                        // Navega al dashboard y elimina Login del backstack
+                        navController.navigate(AppRoutes.DASHBOARD) {
+                            popUpTo(AppRoutes.LOGIN) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
             // ── Dashboard ────────────────────────────────────────────────────
             composable(AppRoutes.DASHBOARD) { backStackEntry ->
                 val vm = remember(backStackEntry, productRepository) {
