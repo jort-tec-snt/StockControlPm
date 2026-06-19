@@ -20,8 +20,23 @@ public class ProductEntity {
     public int minStock;
     public double unitPrice;
 
+    // Precio de compra (opcional); null si no se registra
+    @Nullable
+    public Double purchasePrice;
+
+    // Código único por producto (SKU)
+    @NonNull
+    public String sku;
+
+    // Proveedor (opcional)
+    @Nullable
+    public String supplier;
+
     @Nullable
     public String expirationDate;
+
+    @Nullable
+    public String description;
 
     public long createdAt;
     public long updatedAt;
@@ -33,7 +48,11 @@ public class ProductEntity {
             int stock,
             int minStock,
             double unitPrice,
+            @Nullable Double purchasePrice,
+            @NonNull String sku,
+            @Nullable String supplier,
             @Nullable String expirationDate,
+            @Nullable String description,
             long createdAt,
             long updatedAt
     ) {
@@ -43,9 +62,12 @@ public class ProductEntity {
         this.stock = stock;
         this.minStock = minStock;
         this.unitPrice = unitPrice;
+        this.purchasePrice = purchasePrice;
+        this.sku = sku;
+        this.supplier = supplier;
         this.expirationDate = expirationDate;
+        this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 }
-
