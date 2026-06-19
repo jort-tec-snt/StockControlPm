@@ -219,17 +219,23 @@ fun AppNavigation(
                     if (uiState.wasSaved) navController.popBackStack()
                 }
                 ProductFormScreen(
-                    uiState              = uiState,
-                    onNameChange         = vm::onNameChange,
-                    onCategoryChange     = vm::onCategoryChange,
-                    onStockChange        = vm::onStockChange,
-                    onMinStockChange     = vm::onMinStockChange,
-                    onUnitPriceChange    = vm::onUnitPriceChange,
+                    uiState                = uiState,
+                    onNameChange           = vm::onNameChange,
+                    onCategoryChange       = vm::onCategoryChange,
+                    onStockChange          = vm::onStockChange,
+                    onMinStockChange       = vm::onMinStockChange,
+                    onUnitPriceChange      = vm::onUnitPriceChange,
                     onExpirationDateChange = vm::onExpirationDateChange,
-                    onSaveClick          = vm::saveProduct,
-                    onClearError         = vm::clearError,
-                    onBackClick          = { navController.popBackStack() },
-                    onDashboardClick     = { navController.navigate(AppRoutes.DASHBOARD) }
+                    onSkuChange            = vm::onSkuChange,
+                    onSupplierChange       = vm::onSupplierChange,
+                    onPurchasePriceChange  = vm::onPurchasePriceChange,
+                    onDescriptionChange    = vm::onDescriptionChange,
+                    onShowCategorySheet    = vm::onShowCategorySheet,
+                    onDismissCategorySheet = vm::onDismissCategorySheet,
+                    onSaveClick            = vm::saveProduct,
+                    onClearError           = vm::clearError,
+                    onBackClick            = { navController.popBackStack() },
+                    onDashboardClick       = { navController.navigate(AppRoutes.DASHBOARD) }
                 )
             }
 
