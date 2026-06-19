@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.jort.stockcontrolpm"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -36,6 +36,8 @@ android {
 }
 
 dependencies {
+
+    implementation("androidx.compose.material:material-icons-extended")
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -50,6 +52,7 @@ dependencies {
     implementation("androidx.room:room-ktx:2.8.4")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
     annotationProcessor("androidx.room:room-compiler:2.8.4")
 
     testImplementation(libs.junit)

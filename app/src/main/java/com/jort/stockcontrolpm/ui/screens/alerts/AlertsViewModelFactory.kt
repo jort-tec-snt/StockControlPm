@@ -1,18 +1,16 @@
-package com.jort.stockcontrolpm.ui.screens.apiinfo
+package com.jort.stockcontrolpm.ui.screens.alerts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.jort.stockcontrolpm.data.repository.ApiInfoRepository
 import com.jort.stockcontrolpm.data.repository.ProductRepository
 
-class ApiInfoViewModelFactory(
-    private val repository: ApiInfoRepository,
+class AlertsViewModelFactory(
     private val productRepository: ProductRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ApiInfoViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(AlertsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ApiInfoViewModel(repository, productRepository) as T
+            return AlertsViewModel(productRepository) as T
         }
         throw IllegalArgumentException("ViewModel no soportado: ${modelClass.name}")
     }
