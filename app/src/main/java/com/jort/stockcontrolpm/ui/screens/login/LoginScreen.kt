@@ -121,7 +121,7 @@ fun LoginScreen(
         // ── Formulario ────────────────────────────────────────────────────────
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
                 .background(Bg)
                 .verticalScroll(rememberScrollState())
                 .padding(MaterialTheme.spacing.space5),

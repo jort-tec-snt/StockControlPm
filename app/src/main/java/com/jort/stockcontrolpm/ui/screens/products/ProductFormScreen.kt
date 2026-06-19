@@ -127,7 +127,7 @@ fun ProductFormScreen(
         // ── Formulario ────────────────────────────────────────────────────────
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(MaterialTheme.spacing.space5),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.space4)

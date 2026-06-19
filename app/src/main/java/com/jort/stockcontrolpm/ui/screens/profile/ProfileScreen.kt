@@ -90,7 +90,7 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(Bg)
             .verticalScroll(rememberScrollState())
-    ) {
+    ) { // fillMaxSize + verticalScroll OK aquí porque no hay Column padre fijo
         // ── Header ──────────────────────────────────────────────────────────
         Column(
             modifier = Modifier

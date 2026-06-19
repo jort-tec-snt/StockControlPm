@@ -74,9 +74,11 @@ fun DashboardScreen(
         )
 
         // ── Contenido scrollable ──────────────────────────────────────────────
+        // weight(1f) da al área el espacio restante después del header;
+        // fillMaxSize() dentro de verticalScroll rompe el scroll en Compose.
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
                 .background(Bg)
                 .verticalScroll(rememberScrollState())
                 .padding(MaterialTheme.spacing.space5),
