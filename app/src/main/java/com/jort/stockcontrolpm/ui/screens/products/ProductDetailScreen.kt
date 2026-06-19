@@ -364,7 +364,7 @@ private fun PriceCard(product: Product) {
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Divider))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            PriceLine(label = "Precio de venta",  value = "S/ %.2f".format(product.price))
+            PriceLine(label = "Precio de venta",  value = "S/ %.2f".format(product.unitPrice))
             if (product.purchasePrice != null) {
                 PriceLine(label = "Precio de compra", value = "S/ %.2f".format(product.purchasePrice))
             }
