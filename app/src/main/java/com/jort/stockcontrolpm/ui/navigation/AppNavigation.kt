@@ -31,6 +31,7 @@ import com.jort.stockcontrolpm.data.repository.MovementRepository
 import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoScreen
 import com.jort.stockcontrolpm.ui.screens.alerts.AlertsScreen
+import com.jort.stockcontrolpm.ui.screens.profile.ProfileScreen
 import com.jort.stockcontrolpm.ui.screens.alerts.AlertsViewModel
 import com.jort.stockcontrolpm.ui.screens.alerts.AlertsViewModelFactory
 import com.jort.stockcontrolpm.ui.screens.pos.PosScreen
@@ -276,9 +277,14 @@ fun AppNavigation(
             }
 
             // ── Perfil (tab) ──────────────────────────────────────────────────
-            // Pantalla placeholder hasta Pieza 11
             composable(AppRoutes.PROFILE) {
-                ProfilePlaceholderScreen()
+                ProfileScreen(
+                    onLogout = {
+                        navController.navigate(AppRoutes.LOGIN) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
             }
 
             // ── POS / Caja ────────────────────────────────────────────────────
@@ -342,14 +348,5 @@ private fun StockBottomNav(
     }
 }
 
-// ── Placeholder para Pieza 11 (se reemplaza con ProfileScreen) ───────────────
-@Composable
-private fun ProfilePlaceholderScreen() {
-    androidx.compose.foundation.layout.Box(
-        contentAlignment = androidx.compose.ui.Alignment.Center
-    ) {
-        Text("Perfil — Pieza 11")
-    }
-}
 
 
