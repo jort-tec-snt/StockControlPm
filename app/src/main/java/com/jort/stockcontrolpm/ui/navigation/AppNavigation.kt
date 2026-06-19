@@ -29,6 +29,10 @@ import androidx.navigation.navArgument
 import com.jort.stockcontrolpm.data.repository.ApiInfoRepository
 import com.jort.stockcontrolpm.data.repository.MovementRepository
 import com.jort.stockcontrolpm.data.repository.ProductRepository
+import com.jort.stockcontrolpm.data.repository.UserRepository
+import com.jort.stockcontrolpm.ui.screens.register.RegisterScreen
+import com.jort.stockcontrolpm.ui.screens.register.RegisterViewModel
+import com.jort.stockcontrolpm.ui.screens.register.RegisterViewModelFactory
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoScreen
 import com.jort.stockcontrolpm.ui.screens.alerts.AlertsScreen
 import com.jort.stockcontrolpm.ui.screens.profile.ProfileScreen
@@ -70,6 +74,7 @@ fun AppNavigation(
     productRepository: ProductRepository,
     movementRepository: MovementRepository,
     apiInfoRepository: ApiInfoRepository,
+    userRepository: UserRepository,
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
@@ -127,11 +132,38 @@ fun AppNavigation(
                     onTogglePasswordVisibility = vm::onTogglePasswordVisibility,
                     onLoginClick             = vm::login,
                     onLoginSuccess           = {
-                        // Navega al dashboard y elimina Login del backstack
                         navController.navigate(AppRoutes.DASHBOARD) {
                             popUpTo(AppRoutes.LOGIN) { inclusive = true }
                         }
-                    }
+                    },
+                    onRegisterClick = { navController.navigate(AppRoutes.REGISTER) }
+                )
+            }
+
+            // ── Registro ─────────────────────────────────────────────────────
+            composable(AppRoutes.REGISTER) { backStackEntry ->
+                val vm = remember(backStackEntry, userRepository) {
+                    ViewModelProvider(
+                        backStackEntry,
+                        RegisterViewModelFactory(userRepository)
+                    )[RegisterViewModel::class.java]
+                }
+                val uiState by vm.uiState.collectAsState()
+                RegisterScreen(
+                    uiState                    = uiState,
+                    onNameChange               = vm::onNameChange,
+                    onEmailChange              = vm::onEmailChange,
+                    onPasswordChange           = vm::onPasswordChange,
+                    onConfirmPasswordChange    = vm::onConfirmPasswordChange,
+                    onRoleChange               = vm::onRoleChange,
+                    onTogglePasswordVisibility = vm::onTogglePasswordVisibility,
+                    onRegisterClick            = vm::register,
+                    onRegisterSuccess          = {
+                        navController.navigate(AppRoutes.LOGIN) {
+                            popUpTo(AppRoutes.REGISTER) { inclusive = true }
+                        }
+                    },
+                    onBackClick = { navController.popBackStack() }
                 )
             }
 

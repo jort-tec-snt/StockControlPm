@@ -11,6 +11,7 @@ import com.jort.stockcontrolpm.data.remote.client.RetrofitClient
 import com.jort.stockcontrolpm.data.repository.ApiInfoRepository
 import com.jort.stockcontrolpm.data.repository.MovementRepository
 import com.jort.stockcontrolpm.data.repository.ProductRepository
+import com.jort.stockcontrolpm.data.repository.UserRepository
 import com.jort.stockcontrolpm.ui.navigation.AppNavigation
 import com.jort.stockcontrolpm.ui.theme.StockControlPmTheme
 import kotlinx.coroutines.launch
@@ -24,6 +25,7 @@ class MainActivity : ComponentActivity() {
         val productRepository  = ProductRepository(database.productDao())
         val movementRepository = MovementRepository(database.movementDao())
         val apiInfoRepository  = ApiInfoRepository(RetrofitClient.fakeStoreApiService)
+        val userRepository     = UserRepository(database.userDao())
 
         // Inserta productos de ejemplo solo si la base de datos está vacía
         lifecycleScope.launch {
@@ -35,7 +37,8 @@ class MainActivity : ComponentActivity() {
                 AppNavigation(
                     productRepository  = productRepository,
                     movementRepository = movementRepository,
-                    apiInfoRepository  = apiInfoRepository
+                    apiInfoRepository  = apiInfoRepository,
+                    userRepository     = userRepository
                 )
             }
         }

@@ -9,6 +9,7 @@ object AppRoutes {
 
     // ── Pantallas fuera del BottomNav ───────────────────────────────────────
     const val LOGIN    = "login"
+    const val REGISTER = "register"
     const val POS      = "pos"
     const val API_INFO = "apiinfo"
 

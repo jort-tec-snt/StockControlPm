@@ -11,31 +11,30 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.jort.stockcontrolpm.data.local.dao.MovementDao;
 import com.jort.stockcontrolpm.data.local.dao.ProductDao;
+import com.jort.stockcontrolpm.data.local.dao.UserDao;
 import com.jort.stockcontrolpm.data.local.entity.MovementEntity;
 import com.jort.stockcontrolpm.data.local.entity.ProductEntity;
+import com.jort.stockcontrolpm.data.local.entity.UserEntity;
 
 @Database(
-        entities = {ProductEntity.class, MovementEntity.class},
-        version = 2,
+        entities = {ProductEntity.class, MovementEntity.class, UserEntity.class},
+        version = 3,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
 
-    public abstract ProductDao productDao();
+    public abstract ProductDao  productDao();
     public abstract MovementDao movementDao();
+    public abstract UserDao     userDao();
 
-    // Migración 1→2: nuevos campos en products + tabla movements
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase db) {
-            // Agregar columnas nuevas a products (nullable para compatibilidad)
             db.execSQL("ALTER TABLE products ADD COLUMN purchasePrice REAL");
             db.execSQL("ALTER TABLE products ADD COLUMN sku TEXT NOT NULL DEFAULT ''");
             db.execSQL("ALTER TABLE products ADD COLUMN supplier TEXT");
             db.execSQL("ALTER TABLE products ADD COLUMN description TEXT");
-
-            // Crear tabla movements
             db.execSQL(
                 "CREATE TABLE IF NOT EXISTS movements (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
@@ -53,6 +52,22 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS users (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "name TEXT, " +
+                "email TEXT, " +
+                "passwordHash TEXT, " +
+                "role TEXT, " +
+                "createdAt INTEGER NOT NULL DEFAULT 0)"
+            );
+            db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_users_email ON users(email)");
+        }
+    };
+
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
             synchronized (AppDatabase.class) {
@@ -62,7 +77,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             "stockcontrol_pm.db"
                     )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build();
                 }
             }

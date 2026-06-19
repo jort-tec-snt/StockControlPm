@@ -70,6 +70,7 @@ fun LoginScreen(
     onTogglePasswordVisibility: () -> Unit,
     onLoginClick: () -> Unit,
     onLoginSuccess: () -> Unit,
+    onRegisterClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(uiState.loginSuccess) {
@@ -234,23 +235,16 @@ fun LoginScreen(
                 }
             }
 
-            // Nota de acceso
+            // Enlace a registro
             Text(
-                text      = "El acceso es gestionado por el administrador del minimarket.",
-                style     = MaterialTheme.typography.bodySmall,
-                color     = TextMuted,
-                textAlign = TextAlign.Center,
-                modifier  = Modifier.fillMaxWidth()
-            )
-            Text(
-                text      = "Solicitar acceso",
+                text      = "¿No tienes cuenta?  Regístrate aquí",
                 style     = MaterialTheme.typography.bodySmall,
                 color     = Primary,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
                 modifier  = Modifier
                     .fillMaxWidth()
-                    .clickable { /* v2.5: enlace a formulario de solicitud */ }
+                    .clickable { onRegisterClick() }
             )
 
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.space8))
