@@ -6,6 +6,7 @@ import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.domain.model.Product
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
+import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,28 +24,34 @@ class DashboardViewModel(
         observeDashboard()
     }
 
-    fun observeDashboard() {
+    private fun observeDashboard() {
         viewModelScope.launch {
-            _uiState.update { state -> state.copy(isLoading = true, errorMessage = null) }
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             repository.observeProducts()
                 .catch { throwable ->
-                    _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            errorMessage = throwable.message ?: "No se pudo cargar el dashboard."
-                        )
-                    }
+                    _uiState.update { it.copy(
+                        isLoading = false,
+                        errorMessage = throwable.message ?: "No se pudo cargar el dashboard."
+                    ) }
                 }
                 .collect { products ->
+                    val today = LocalDate.now()
+                    val expiring = products
+                        .mapNotNull { p -> p.daysUntilExpiry(today)?.let { days ->
+                            ExpiringProductInfo(p.name, days)
+                        }}
+                        .sortedBy { it.daysLeft }
+
                     _uiState.update {
                         DashboardUiState(
-                            isLoading = false,
-                            totalProducts = products.size,
-                            outOfStockProducts = products.count { product -> product.isOutOfStock },
-                            criticalStockProducts = products.count { product -> product.isCriticalStock },
-                            expiringSoonProducts = products.count { product -> product.isExpiringSoon() },
-                            inventoryValue = products.sumOf { product -> product.inventoryValue }
+                            isLoading              = false,
+                            totalProducts          = products.size,
+                            outOfStockProducts     = products.count { it.isOutOfStock },
+                            criticalStockProducts  = products.count { it.isCriticalStock },
+                            expiringSoonProducts   = expiring.size,
+                            inventoryValue         = products.sumOf { it.inventoryValue },
+                            expiringProductsList   = expiring.take(3)
                         )
                     }
                 }
@@ -52,17 +59,18 @@ class DashboardViewModel(
     }
 
     fun clearError() {
-        _uiState.update { state -> state.copy(errorMessage = null) }
+        _uiState.update { it.copy(errorMessage = null) }
     }
 
-    private fun Product.isExpiringSoon(): Boolean {
-        val date = expirationDate ?: return false
+    // Retorna días restantes si vence en los próximos 10 días, null si no aplica
+    private fun Product.daysUntilExpiry(today: LocalDate): Int? {
+        val date = expirationDate ?: return null
         return try {
             val expiration = LocalDate.parse(date)
-            val today = LocalDate.now()
-            !expiration.isBefore(today) && !expiration.isAfter(today.plusDays(30))
+            val days = ChronoUnit.DAYS.between(today, expiration).toInt()
+            if (days in 0..10) days else null
         } catch (_: DateTimeParseException) {
-            false
+            null
         }
     }
 }
