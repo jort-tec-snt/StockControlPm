@@ -248,19 +248,20 @@ fun AppNavigation(
 
             // ── API Info (consumo Retrofit) ───────────────────────────────────
             composable(AppRoutes.API_INFO) { backStackEntry ->
-                val vm = remember(backStackEntry, apiInfoRepository) {
+                val vm = remember(backStackEntry, apiInfoRepository, productRepository) {
                     ViewModelProvider(
                         backStackEntry,
-                        ApiInfoViewModelFactory(apiInfoRepository)
+                        ApiInfoViewModelFactory(apiInfoRepository, productRepository)
                     )[ApiInfoViewModel::class.java]
                 }
                 val uiState by vm.uiState.collectAsState()
                 ApiInfoScreen(
-                    uiState        = uiState,
-                    onRetryClick   = vm::loadExternalProducts,
-                    onClearError   = vm::clearError,
+                    uiState          = uiState,
+                    onRetryClick     = vm::loadExternalProducts,
+                    onClearError     = vm::clearError,
                     onDashboardClick = { navController.navigate(AppRoutes.DASHBOARD) },
-                    onProductsClick  = { navController.navigate(AppRoutes.INVENTORY) }
+                    onProductsClick  = { navController.navigate(AppRoutes.INVENTORY) },
+                    onImportProduct  = vm::importProduct
                 )
             }
 

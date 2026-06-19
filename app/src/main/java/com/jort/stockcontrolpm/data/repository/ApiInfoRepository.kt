@@ -22,6 +22,6 @@ class ApiInfoRepository(
         price       = price,
         category    = category,
         description = description,
-        imageUrl    = ""   // FakeStore no incluye URL directa en el DTO actual
+        imageUrl    = imageUrl
     )
 }
