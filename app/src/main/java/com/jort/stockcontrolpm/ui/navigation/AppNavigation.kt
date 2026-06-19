@@ -30,6 +30,9 @@ import com.jort.stockcontrolpm.data.repository.ApiInfoRepository
 import com.jort.stockcontrolpm.data.repository.MovementRepository
 import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoScreen
+import com.jort.stockcontrolpm.ui.screens.alerts.AlertsScreen
+import com.jort.stockcontrolpm.ui.screens.alerts.AlertsViewModel
+import com.jort.stockcontrolpm.ui.screens.alerts.AlertsViewModelFactory
 import com.jort.stockcontrolpm.ui.screens.pos.PosScreen
 import com.jort.stockcontrolpm.ui.screens.pos.PosViewModel
 import com.jort.stockcontrolpm.ui.screens.pos.PosViewModelFactory
@@ -261,9 +264,15 @@ fun AppNavigation(
             }
 
             // ── Alertas (tab) ─────────────────────────────────────────────────
-            // Pantalla placeholder hasta Pieza 10
-            composable(AppRoutes.ALERTS) {
-                AlertsPlaceholderScreen()
+            composable(AppRoutes.ALERTS) { backStackEntry ->
+                val vm = remember(backStackEntry, productRepository) {
+                    ViewModelProvider(
+                        backStackEntry,
+                        AlertsViewModelFactory(productRepository)
+                    )[AlertsViewModel::class.java]
+                }
+                val uiState by vm.uiState.collectAsState()
+                AlertsScreen(uiState = uiState)
             }
 
             // ── Perfil (tab) ──────────────────────────────────────────────────
@@ -333,17 +342,7 @@ private fun StockBottomNav(
     }
 }
 
-// ── Placeholders para piezas pendientes ──────────────────────────────────────
-@Composable
-private fun AlertsPlaceholderScreen() {
-    androidx.compose.foundation.layout.Box(
-        modifier = Modifier.then(Modifier),
-        contentAlignment = androidx.compose.ui.Alignment.Center
-    ) {
-        Text("Alertas — Pieza 10")
-    }
-}
-
+// ── Placeholder para Pieza 11 (se reemplaza con ProfileScreen) ───────────────
 @Composable
 private fun ProfilePlaceholderScreen() {
     androidx.compose.foundation.layout.Box(
