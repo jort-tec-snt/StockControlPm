@@ -254,7 +254,7 @@ private fun ProductDetailContent(
                 }
             }
 
-            if (!product.sku.isNullOrBlank()) {
+            if (product.sku.isNotBlank()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)

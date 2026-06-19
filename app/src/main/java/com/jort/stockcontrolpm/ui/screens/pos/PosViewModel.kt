@@ -51,7 +51,7 @@ class PosViewModel(
                 state.cartItems + CartItem(
                     productId = product.id,
                     name      = product.name,
-                    unitPrice = product.price,
+                    unitPrice = product.unitPrice,
                     qty       = 1,
                     maxStock  = product.stock
                 )

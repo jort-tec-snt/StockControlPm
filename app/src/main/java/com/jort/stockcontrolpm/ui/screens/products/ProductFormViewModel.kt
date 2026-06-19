@@ -45,7 +45,7 @@ class ProductFormViewModel(
                             minStock      = product.minStock.toString(),
                             unitPrice     = product.unitPrice.toString(),
                             expirationDate = product.expirationDate.orEmpty(),
-                            sku           = product.sku.orEmpty(),
+                            sku           = product.sku,
                             supplier      = product.supplier.orEmpty(),
                             purchasePrice = product.purchasePrice?.toString().orEmpty(),
                             description   = product.description.orEmpty()

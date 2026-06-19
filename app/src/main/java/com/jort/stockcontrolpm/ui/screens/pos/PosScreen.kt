@@ -312,7 +312,7 @@ private fun SearchResultRow(product: Product, onClick: () -> Unit) {
             Text(product.name, style = MaterialTheme.typography.bodyLarge,
                 color = TextPrimary, fontWeight = FontWeight.Medium,
                 maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text("S/ %.2f • Stock: ${product.stock}".format(product.price),
+            Text("S/ %.2f • Stock: ${product.stock}".format(product.unitPrice),
                 style = MaterialTheme.typography.bodySmall, color = TextMuted)
         }
         Box(

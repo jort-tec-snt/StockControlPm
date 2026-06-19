@@ -339,7 +339,7 @@ private fun ProductRow(product: Product, onClick: () -> Unit) {
                 }
                 Text("•", color = TextMuted, style = MaterialTheme.typography.bodySmall)
                 Text(
-                    text  = "S/ %.2f".format(product.price),
+                    text  = "S/ %.2f".format(product.unitPrice),
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary,
                     fontWeight = FontWeight.Medium
