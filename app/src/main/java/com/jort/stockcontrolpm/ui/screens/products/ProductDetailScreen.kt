@@ -167,7 +167,8 @@ fun ProductDetailScreen(
                 ProductDetailContent(
                     product         = uiState.product,
                     onEditClick     = { onEditClick(productId) },
-                    onDeleteClick   = { showDeleteDialog = true }
+                    onDeleteClick   = { showDeleteDialog = true },
+                    modifier        = Modifier.weight(1f)
                 )
             }
             else -> {
@@ -187,7 +188,8 @@ fun ProductDetailScreen(
 private fun ProductDetailContent(
     product: Product,
     onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val stockColor = when (product.stockStatus) {
         StockStatus.OK           -> Success
@@ -201,8 +203,7 @@ private fun ProductDetailContent(
     }
 
     Column(
-        modifier = Modifier
-            .weight(1f)
+        modifier = modifier
             .verticalScroll(rememberScrollState())
             .padding(MaterialTheme.spacing.space5),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.space4)
