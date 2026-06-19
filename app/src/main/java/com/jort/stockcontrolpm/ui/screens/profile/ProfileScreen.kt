@@ -190,7 +190,7 @@ fun ProfileScreen(
                 ProfileRow(
                     icon    = Icons.Outlined.Code,
                     label   = "Desarrollado por",
-                    sub     = "Rony Quintana — TECSUP 2026",
+                    sub     = "Ortiz Jeronimo — TECSUP 2026",
                     showChevron = false,
                     onClick = {}
                 )
