@@ -30,6 +30,9 @@ import com.jort.stockcontrolpm.data.repository.ApiInfoRepository
 import com.jort.stockcontrolpm.data.repository.MovementRepository
 import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoScreen
+import com.jort.stockcontrolpm.ui.screens.pos.PosScreen
+import com.jort.stockcontrolpm.ui.screens.pos.PosViewModel
+import com.jort.stockcontrolpm.ui.screens.pos.PosViewModelFactory
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoViewModel
 import com.jort.stockcontrolpm.ui.screens.apiinfo.ApiInfoViewModelFactory
 import com.jort.stockcontrolpm.ui.screens.login.LoginScreen
@@ -270,9 +273,25 @@ fun AppNavigation(
             }
 
             // ── POS / Caja ────────────────────────────────────────────────────
-            // Pantalla placeholder hasta Pieza 9
-            composable(AppRoutes.POS) {
-                PosPlaceholderScreen()
+            composable(AppRoutes.POS) { backStackEntry ->
+                val vm = remember(backStackEntry, productRepository) {
+                    ViewModelProvider(
+                        backStackEntry,
+                        PosViewModelFactory(productRepository)
+                    )[PosViewModel::class.java]
+                }
+                val uiState by vm.uiState.collectAsState()
+                PosScreen(
+                    uiState             = uiState,
+                    onSearchQueryChange = vm::onSearchQueryChange,
+                    onAddToCart         = vm::addToCart,
+                    onIncrementQty      = vm::incrementQty,
+                    onDecrementQty      = vm::decrementQty,
+                    onRemoveFromCart    = vm::removeFromCart,
+                    onClearCart         = vm::clearCart,
+                    onCheckout          = vm::checkout,
+                    onDismissQrSheet    = vm::dismissQrSheet
+                )
             }
         }
     }
@@ -334,11 +353,4 @@ private fun ProfilePlaceholderScreen() {
     }
 }
 
-@Composable
-private fun PosPlaceholderScreen() {
-    androidx.compose.foundation.layout.Box(
-        contentAlignment = androidx.compose.ui.Alignment.Center
-    ) {
-        Text("POS / Caja — Pieza 9")
-    }
-}
+
