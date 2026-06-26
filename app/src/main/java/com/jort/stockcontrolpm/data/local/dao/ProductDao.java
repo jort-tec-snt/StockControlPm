@@ -43,5 +43,8 @@ public interface ProductDao {
 
     @Query("SELECT COUNT(*) FROM products")
     int countProducts();
+
+    @Query("SELECT * FROM products ORDER BY name ASC")
+    List<ProductEntity> getAllProducts();
 }
 

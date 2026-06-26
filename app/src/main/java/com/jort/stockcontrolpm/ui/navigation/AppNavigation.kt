@@ -1,6 +1,7 @@
 package com.jort.stockcontrolpm.ui.navigation
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Inventory2
@@ -30,6 +31,7 @@ import com.jort.stockcontrolpm.data.repository.ApiInfoRepository
 import com.jort.stockcontrolpm.data.repository.MovementRepository
 import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.data.repository.UserRepository
+import com.jort.stockcontrolpm.data.repository.FirebaseAuthRepository
 import com.jort.stockcontrolpm.ui.screens.register.RegisterScreen
 import com.jort.stockcontrolpm.ui.screens.register.RegisterViewModel
 import com.jort.stockcontrolpm.ui.screens.register.RegisterViewModelFactory
@@ -79,6 +81,10 @@ fun AppNavigation(
 ) {
     val navController = rememberNavController()
 
+    // Si ya hay sesión activa en Firebase, salta directo al Dashboard
+    val authRepo = remember { FirebaseAuthRepository() }
+    val startDestination = if (authRepo.isLoggedIn()) AppRoutes.DASHBOARD else AppRoutes.LOGIN
+
     // Rutas que muestran el BottomNav (Login y pantallas de detalle lo ocultan)
     val bottomNavRoutes = setOf(
         AppRoutes.DASHBOARD,
@@ -112,7 +118,7 @@ fun AppNavigation(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = AppRoutes.LOGIN,
+            startDestination = startDestination,
             modifier = modifier.padding(innerPadding)
         ) {
             // ── Login ────────────────────────────────────────────────────────
@@ -125,13 +131,12 @@ fun AppNavigation(
                 }
                 val uiState by vm.uiState.collectAsState()
                 LoginScreen(
-                    uiState                  = uiState,
-                    onEmailChange            = vm::onEmailChange,
-                    onPasswordChange         = vm::onPasswordChange,
-                    onRoleChange             = vm::onRoleChange,
+                    uiState                    = uiState,
+                    onEmailChange              = vm::onEmailChange,
+                    onPasswordChange           = vm::onPasswordChange,
                     onTogglePasswordVisibility = vm::onTogglePasswordVisibility,
-                    onLoginClick             = vm::login,
-                    onLoginSuccess           = {
+                    onLoginClick               = vm::login,
+                    onLoginSuccess             = {
                         navController.navigate(AppRoutes.DASHBOARD) {
                             popUpTo(AppRoutes.LOGIN) { inclusive = true }
                         }
@@ -142,10 +147,10 @@ fun AppNavigation(
 
             // ── Registro ─────────────────────────────────────────────────────
             composable(AppRoutes.REGISTER) { backStackEntry ->
-                val vm = remember(backStackEntry, userRepository) {
+                val vm = remember(backStackEntry) {
                     ViewModelProvider(
                         backStackEntry,
-                        RegisterViewModelFactory(userRepository)
+                        RegisterViewModelFactory()
                     )[RegisterViewModel::class.java]
                 }
                 val uiState by vm.uiState.collectAsState()
@@ -155,7 +160,6 @@ fun AppNavigation(
                     onEmailChange              = vm::onEmailChange,
                     onPasswordChange           = vm::onPasswordChange,
                     onConfirmPasswordChange    = vm::onConfirmPasswordChange,
-                    onRoleChange               = vm::onRoleChange,
                     onTogglePasswordVisibility = vm::onTogglePasswordVisibility,
                     onRegisterClick            = vm::register,
                     onRegisterSuccess          = {
@@ -246,10 +250,11 @@ fun AppNavigation(
             ) { backStackEntry ->
                 val rawId = backStackEntry.arguments?.getLong(AppRoutes.PRODUCT_ID_ARGUMENT) ?: -1L
                 val formProductId = rawId.takeIf { it != -1L }
+                val context = LocalContext.current
                 val vm = remember(backStackEntry, productRepository) {
                     ViewModelProvider(
                         backStackEntry,
-                        ProductFormViewModelFactory(productRepository)
+                        ProductFormViewModelFactory(productRepository, context)
                     )[ProductFormViewModel::class.java]
                 }
                 val uiState by vm.uiState.collectAsState()
@@ -311,8 +316,11 @@ fun AppNavigation(
 
             // ── Perfil (tab) ──────────────────────────────────────────────────
             composable(AppRoutes.PROFILE) {
+                val authRepo = remember { FirebaseAuthRepository() }
                 ProfileScreen(
+                    userName = authRepo.getDisplayName(),
                     onLogout = {
+                        authRepo.logout()
                         navController.navigate(AppRoutes.LOGIN) {
                             popUpTo(0) { inclusive = true }
                         }

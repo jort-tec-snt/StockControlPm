@@ -1,5 +1,6 @@
 package com.jort.stockcontrolpm.ui.screens.products
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.jort.stockcontrolpm.data.repository.ProductRepository
@@ -29,12 +30,13 @@ class ProductDetailViewModelFactory(
 }
 
 class ProductFormViewModelFactory(
-    private val repository: ProductRepository
+    private val repository: ProductRepository,
+    private val context: Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProductFormViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ProductFormViewModel(repository) as T
+            return ProductFormViewModel(repository, context.applicationContext) as T
         }
         throw IllegalArgumentException("ViewModel no soportado: ${modelClass.name}")
     }

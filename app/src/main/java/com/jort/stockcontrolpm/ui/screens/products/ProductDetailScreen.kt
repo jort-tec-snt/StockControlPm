@@ -367,7 +367,7 @@ private fun PriceCard(product: Product) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             PriceLine(label = "Precio de venta",  value = "S/ %.2f".format(product.unitPrice))
             if (product.purchasePrice != null) {
-                PriceLine(label = "Precio de compra", value = "S/ %.2f".format(product.purchasePrice))
+                PriceLine(label = "Precio de costo", value = "S/ %.2f".format(product.purchasePrice))
             }
         }
 
@@ -428,10 +428,10 @@ private fun InfoSection(product: Product) {
 
         InfoRow(icon = Icons.Outlined.Category, label = "Categoría",  value = product.category)
         if (!product.supplier.isNullOrBlank()) {
-            InfoRow(icon = Icons.Outlined.Person, label = "Proveedor", value = product.supplier!!)
+            InfoRow(icon = Icons.Outlined.Person, label = "Marca / Proveedor", value = product.supplier!!)
         }
         if (!product.expirationDate.isNullOrBlank()) {
-            InfoRow(icon = Icons.Outlined.DateRange, label = "Vencimiento", value = product.expirationDate!!)
+            InfoRow(icon = Icons.Outlined.DateRange, label = "Lanzamiento", value = product.expirationDate!!)
         }
         if (!product.description.isNullOrBlank()) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

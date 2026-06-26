@@ -71,7 +71,6 @@ fun RegisterScreen(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
-    onRoleChange: (String) -> Unit,
     onTogglePasswordVisibility: () -> Unit,
     onRegisterClick: () -> Unit,
     onRegisterSuccess: () -> Unit,
@@ -141,8 +140,8 @@ fun RegisterScreen(
                 label         = "Nombre completo",
                 placeholder   = "Ej. Juan Pérez",
                 icon          = Icons.Outlined.Person,
-                isError       = uiState.name.isNotBlank() && uiState.nameError != null,
-                supportText   = if (uiState.name.isNotBlank()) uiState.nameError else null,
+                isError       = false,
+                supportText   = null,
                 imeAction     = ImeAction.Next
             )
 
@@ -154,8 +153,8 @@ fun RegisterScreen(
                 placeholder   = "correo@ejemplo.com",
                 icon          = Icons.Outlined.Mail,
                 keyboardType  = KeyboardType.Email,
-                isError       = uiState.email.isNotBlank() && uiState.emailError != null,
-                supportText   = if (uiState.email.isNotBlank()) uiState.emailError else null,
+                isError       = false,
+                supportText   = null,
                 imeAction     = ImeAction.Next
             )
 
@@ -166,8 +165,8 @@ fun RegisterScreen(
                 label         = "Contraseña",
                 placeholder   = "Mínimo 6 caracteres",
                 icon          = Icons.Outlined.Lock,
-                isError       = uiState.password.isNotBlank() && uiState.passwordError != null,
-                supportText   = if (uiState.password.isNotBlank()) uiState.passwordError else null,
+                isError       = false,
+                supportText   = null,
                 keyboardType  = KeyboardType.Password,
                 imeAction     = ImeAction.Next,
                 visualTransformation = if (uiState.passwordVisible)
@@ -190,63 +189,14 @@ fun RegisterScreen(
                 label         = "Confirmar contraseña",
                 placeholder   = "Repite tu contraseña",
                 icon          = Icons.Outlined.Lock,
-                isError       = uiState.confirmPassword.isNotBlank() && uiState.confirmError != null,
-                supportText   = if (uiState.confirmPassword.isNotBlank()) uiState.confirmError else null,
+                isError       = false,
+                supportText   = null,
                 keyboardType  = KeyboardType.Password,
                 imeAction     = ImeAction.Done,
                 visualTransformation = if (uiState.passwordVisible)
                     VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardActions = KeyboardActions(onDone = { onRegisterClick() })
             )
-
-            // Selector de rol
-            Text(
-                text  = "ROL EN EL SISTEMA",
-                style = MaterialTheme.typography.labelSmall,
-                color = TextSecondary
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .border(1.5.dp, Divider, RoundedCornerShape(12.dp)),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                listOf("OWNER" to "Propietario", "CASHIER" to "Cajero").forEach { (value, label) ->
-                    val selected = uiState.role == value
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(44.dp)
-                            .background(
-                                if (selected) Primary else Color.Transparent,
-                                shape = when (value) {
-                                    "OWNER"   -> RoundedCornerShape(topStart = 11.dp, bottomStart = 11.dp)
-                                    else      -> RoundedCornerShape(topEnd = 11.dp, bottomEnd = 11.dp)
-                                }
-                            )
-                            .clickable { onRoleChange(value) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Outlined.Badge, null,
-                                tint     = if (selected) Color.White else TextMuted,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Text(
-                                text       = label,
-                                style      = MaterialTheme.typography.bodyLarge,
-                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-                                color      = if (selected) Color.White else TextSecondary
-                            )
-                        }
-                    }
-                }
-            }
 
             // Banner de error global
             if (uiState.errorMessage != null) {

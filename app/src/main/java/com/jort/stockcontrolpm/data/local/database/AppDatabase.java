@@ -12,13 +12,22 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.jort.stockcontrolpm.data.local.dao.MovementDao;
 import com.jort.stockcontrolpm.data.local.dao.ProductDao;
 import com.jort.stockcontrolpm.data.local.dao.UserDao;
+import com.jort.stockcontrolpm.data.local.dao.VentaDao;
 import com.jort.stockcontrolpm.data.local.entity.MovementEntity;
 import com.jort.stockcontrolpm.data.local.entity.ProductEntity;
 import com.jort.stockcontrolpm.data.local.entity.UserEntity;
+import com.jort.stockcontrolpm.data.local.entity.VentaEntity;
+import com.jort.stockcontrolpm.data.local.entity.VentaItemEntity;
 
 @Database(
-        entities = {ProductEntity.class, MovementEntity.class, UserEntity.class},
-        version = 3,
+        entities = {
+            ProductEntity.class,
+            MovementEntity.class,
+            UserEntity.class,
+            VentaEntity.class,
+            VentaItemEntity.class
+        },
+        version = 4,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -27,6 +36,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ProductDao  productDao();
     public abstract MovementDao movementDao();
     public abstract UserDao     userDao();
+    public abstract VentaDao    ventaDao();
 
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
@@ -68,6 +78,48 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    // Migración 3→4: campos Tabla 21 en products, ventaId en movements,
+    // nuevas tablas ventas y venta_items (Tablas 22 y 22b del PDF)
+    static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            // Campos nuevos en products
+            db.execSQL("ALTER TABLE products ADD COLUMN codigoBarras TEXT");
+            db.execSQL("ALTER TABLE products ADD COLUMN imagenUrl TEXT");
+            db.execSQL("ALTER TABLE products ADD COLUMN visible INTEGER NOT NULL DEFAULT 1");
+            db.execSQL("ALTER TABLE products ADD COLUMN userId TEXT NOT NULL DEFAULT ''");
+
+            // Campo nuevo en movements
+            db.execSQL("ALTER TABLE movements ADD COLUMN ventaId TEXT");
+
+            // Tabla ventas
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS ventas (" +
+                "id TEXT PRIMARY KEY NOT NULL, " +
+                "cajeroUid TEXT NOT NULL, " +
+                "fecha INTEGER NOT NULL, " +
+                "total REAL NOT NULL, " +
+                "metodoPago TEXT NOT NULL, " +
+                "referenciaPago TEXT, " +
+                "sincronizado INTEGER NOT NULL DEFAULT 0, " +
+                "userId TEXT NOT NULL DEFAULT '')"
+            );
+
+            // Tabla venta_items
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS venta_items (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "ventaId TEXT NOT NULL, " +
+                "productId INTEGER NOT NULL, " +
+                "productName TEXT NOT NULL, " +
+                "qty INTEGER NOT NULL, " +
+                "unitPrice REAL NOT NULL, " +
+                "FOREIGN KEY(ventaId) REFERENCES ventas(id) ON DELETE CASCADE)"
+            );
+            db.execSQL("CREATE INDEX IF NOT EXISTS index_venta_items_ventaId ON venta_items(ventaId)");
+        }
+    };
+
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
             synchronized (AppDatabase.class) {
@@ -77,7 +129,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             "stockcontrol_pm.db"
                     )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build();
                 }
             }

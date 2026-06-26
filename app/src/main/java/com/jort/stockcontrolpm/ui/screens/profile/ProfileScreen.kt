@@ -60,7 +60,7 @@ import com.jort.stockcontrolpm.ui.theme.spacing
 @Composable
 fun ProfileScreen(
     userName: String = "Administrador",
-    userEmail: String = "admin@minimarket.pe",
+    userEmail: String = "correo@ejemplo.com",
     userRole: String = "Propietario",
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
@@ -171,8 +171,8 @@ fun ProfileScreen(
             ProfileSection(title = "Negocio") {
                 ProfileRow(
                     icon    = Icons.Outlined.Inventory2,
-                    label   = "Minimarket El Progreso",
-                    sub     = "Configuración del local",
+                    label   = "StockControl Store",
+                    sub     = "Configuración de la tienda",
                     onClick = {}
                 )
             }

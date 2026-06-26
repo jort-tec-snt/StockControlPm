@@ -1,9 +1,11 @@
 package com.jort.stockcontrolpm.ui.screens.products
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jort.stockcontrolpm.data.repository.ProductRepository
 import com.jort.stockcontrolpm.domain.model.Product
+import com.jort.stockcontrolpm.notification.NotificationHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +13,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProductFormViewModel(
-    private val repository: ProductRepository
+    private val repository: ProductRepository,
+    private val appContext: Context
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProductFormUiState())
     val uiState: StateFlow<ProductFormUiState> = _uiState.asStateFlow()
@@ -108,7 +111,18 @@ class ProductFormViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true, errorMessage = null, wasSaved = false) }
             runCatching { repository.saveProduct(product) }
-                .onSuccess { _uiState.update { it.copy(isSaving = false, wasSaved = true, errorMessage = null) } }
+                .onSuccess {
+                    // Notificación local: si el stock guardado es crítico, avisar al usuario
+                    if (product.stock in 1..product.minStock) {
+                        NotificationHelper.showLowStockNotification(
+                            context       = appContext,
+                            productName   = product.name,
+                            currentStock  = product.stock,
+                            minStock      = product.minStock
+                        )
+                    }
+                    _uiState.update { it.copy(isSaving = false, wasSaved = true, errorMessage = null) }
+                }
                 .onFailure { throwable -> _uiState.update { it.copy(
                     isSaving = false,
                     errorMessage = throwable.message ?: "No se pudo guardar el producto."

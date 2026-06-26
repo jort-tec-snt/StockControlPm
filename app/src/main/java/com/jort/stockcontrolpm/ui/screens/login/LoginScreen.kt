@@ -66,7 +66,6 @@ fun LoginScreen(
     uiState: LoginUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onRoleChange: (UserRole) -> Unit,
     onTogglePasswordVisibility: () -> Unit,
     onLoginClick: () -> Unit,
     onLoginSuccess: () -> Unit,
@@ -106,7 +105,7 @@ fun LoginScreen(
                 letterSpacing = 1.sp
             )
             Text(
-                text  = "Supervisión operativa para minimarkets",
+                text  = "Gestión de inventario para tu tienda",
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White.copy(alpha = 0.80f)
             )
@@ -130,31 +129,12 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.space2))
 
-            // Selector de rol
-            Text(
-                text       = "ACCEDER COMO",
-                style      = MaterialTheme.typography.labelSmall,
-                color      = TextSecondary
-            )
-            RoleSegmentedControl(
-                selected  = uiState.role,
-                onSelect  = onRoleChange
-            )
-
-            // Separador
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(Divider)
-            )
-
             // Campo email
             LoginField(
                 value         = uiState.email,
                 onValueChange = onEmailChange,
                 label         = "Correo electrónico",
-                placeholder   = "admin@minimarket.pe",
+                placeholder   = "correo@ejemplo.com",
                 leadingIcon   = { Icon(Icons.Outlined.Mail, null, tint = TextMuted) },
                 keyboardType  = KeyboardType.Email,
                 imeAction     = ImeAction.Next,
@@ -252,46 +232,6 @@ fun LoginScreen(
     }
 }
 
-// ── Selector de rol (SegmentedControl) ───────────────────────────────────────
-@Composable
-private fun RoleSegmentedControl(
-    selected: UserRole,
-    onSelect: (UserRole) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(1.5.dp, Divider, RoundedCornerShape(12.dp))
-            .background(androidx.compose.ui.graphics.Color.Transparent)
-    ) {
-        UserRole.entries.forEach { role ->
-            val isSelected = role == selected
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(42.dp)
-                    .background(
-                        if (isSelected) Primary else Color.Transparent,
-                        shape = when (role) {
-                            UserRole.OWNER   -> RoundedCornerShape(topStart = 11.dp, bottomStart = 11.dp)
-                            UserRole.CASHIER -> RoundedCornerShape(topEnd = 11.dp, bottomEnd = 11.dp)
-                        }
-                    )
-                    .clickable { onSelect(role) },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text       = role.label,
-                    style      = MaterialTheme.typography.bodyLarge,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color      = if (isSelected) Color.White else TextSecondary
-                )
-            }
-        }
-    }
-}
 
 // ── Campo de texto reutilizable para el login ─────────────────────────────────
 @Composable

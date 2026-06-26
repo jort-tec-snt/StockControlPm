@@ -156,7 +156,7 @@ fun AlertsScreen(
                         item {
                             AlertGroup(
                                 icon       = Icons.Outlined.DateRange,
-                                title      = "Próximos a vencer",
+                                title      = "Próximos a discontinuar",
                                 count      = uiState.expiringSoon.size,
                                 iconTint   = Accent,
                                 iconBg     = AccentLight,

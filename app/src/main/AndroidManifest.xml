@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Requerido en Android 13+ (API 33) para mostrar notificaciones -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.StockControlPm">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -21,10 +24,24 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+            StockFirebaseMessagingService
+            Recibe mensajes push de Firebase Cloud Messaging (FCM).
+            android:exported="false": solo FCM puede activar este servicio (no otras apps).
+            El intent-filter "com.google.firebase.MESSAGING_EVENT" es el contrato FCM.
+        -->
+        <service
+            android:name=".notification.StockFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

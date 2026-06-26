@@ -103,7 +103,7 @@ fun DashboardScreen(
                     // KPIs
                     KpiSection(uiState = uiState)
 
-                    // Próximos a vencer
+                    // Próximos a discontinuar
                     if (uiState.expiringProductsList.isNotEmpty()) {
                         ExpiringSection(items = uiState.expiringProductsList)
                     }
@@ -152,7 +152,7 @@ private fun DashboardHeader(
                     color      = Color.White.copy(alpha = 0.75f)
                 )
                 Text(
-                    text       = "Minimarket El Progreso",
+                    text       = "StockControl Store",
                     style      = MaterialTheme.typography.headlineMedium,
                     color      = Color.White,
                     fontWeight = FontWeight.Bold
@@ -285,8 +285,8 @@ private fun KpiSection(uiState: DashboardUiState) {
         }
         KpiCard(
             value      = uiState.expiringSoonProducts.toString(),
-            label      = "Próximos a vencer",
-            sub        = "en los próximos 10 días",
+            label      = "Próximos a discontinuar",
+            sub        = "con fecha de lanzamiento próxima",
             bg         = if (uiState.expiringSoonProducts > 0) AccentLight else Surface,
             valueColor = if (uiState.expiringSoonProducts > 0) Warning else TextPrimary,
             modifier   = Modifier.fillMaxWidth()
@@ -318,11 +318,11 @@ private fun KpiCard(
     }
 }
 
-// ── Próximos a vencer ─────────────────────────────────────────────────────────
+// ── Próximos a discontinuar ─────────────────────────────────────────────────────────
 @Composable
 private fun ExpiringSection(items: List<ExpiringProductInfo>) {
     Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.space3)) {
-        Text(text = "Próximos a vencer", style = MaterialTheme.typography.headlineSmall,
+        Text(text = "Próximos a discontinuar", style = MaterialTheme.typography.headlineSmall,
             color = TextPrimary, fontWeight = FontWeight.Bold)
         items.forEach { item ->
             Row(

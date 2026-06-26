@@ -2,4 +2,6 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.compose) apply false
+    // Plugin de Google Services: procesa el google-services.json y conecta Firebase al proyecto
+    id("com.google.gms.google-services") version "4.4.2" apply false
 }

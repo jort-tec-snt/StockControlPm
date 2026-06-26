@@ -158,7 +158,7 @@ fun ProductFormScreen(
                     value         = uiState.name,
                     onValueChange = onNameChange,
                     label         = "Nombre del producto *",
-                    placeholder   = "Ej: Leche Gloria 1L",
+                    placeholder   = "Ej: Camiseta Polo Slim Fit",
                     imeAction     = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Words
                 )
@@ -166,7 +166,7 @@ fun ProductFormScreen(
                     value         = uiState.sku,
                     onValueChange = { onSkuChange?.invoke(it) },
                     label         = "SKU / Código",
-                    placeholder   = "Ej: GLO-001",
+                    placeholder   = "Ej: NIK-001",
                     imeAction     = ImeAction.Next
                 )
 
@@ -205,7 +205,7 @@ fun ProductFormScreen(
                 FormField(
                     value         = uiState.expirationDate,
                     onValueChange = onExpirationDateChange,
-                    label         = "Fecha de vencimiento",
+                    label         = "Fecha de lanzamiento",
                     placeholder   = "AAAA-MM-DD",
                     imeAction     = ImeAction.Next
                 )
@@ -230,7 +230,7 @@ fun ProductFormScreen(
                     FormField(
                         value         = uiState.purchasePrice,
                         onValueChange = { onPurchasePriceChange?.invoke(it) },
-                        label         = "Precio de compra",
+                        label         = "Precio de costo",
                         placeholder   = "0.00",
                         keyboardType  = KeyboardType.Decimal,
                         imeAction     = ImeAction.Next,
@@ -241,12 +241,12 @@ fun ProductFormScreen(
             }
 
             // ─ Sección 4: Proveedor y descripción ────────────────────────────
-            FormSection(title = "Proveedor y descripción") {
+            FormSection(title = "Marca y descripción") {
                 FormField(
                     value         = uiState.supplier,
                     onValueChange = { onSupplierChange?.invoke(it) },
-                    label         = "Proveedor",
-                    placeholder   = "Ej: Distribuidora Norte SAC",
+                    label         = "Marca / Proveedor",
+                    placeholder   = "Ej: Nike, Samsung, Zara",
                     imeAction     = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Words
                 )

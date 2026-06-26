@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    // Conecta el google-services.json con la app para Firebase
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -33,9 +35,28 @@ android {
     buildFeatures {
         compose = true
     }
+    buildToolsVersion = "34.0.0"
 }
 
 dependencies {
+
+    // ── Firebase BOM ──────────────────────────────────────────────────────────
+    // BOM versión 33.7.0 — estable y compatible con AGP 8.x / Kotlin 2.x
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+
+    // Firebase Authentication: registro e inicio de sesión con email/contraseña
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+    // Cloud Firestore: base de datos NoSQL en la nube
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+    // Firebase Cloud Messaging (FCM): notificaciones push
+    implementation("com.google.firebase:firebase-messaging-ktx")
+
+    // Soporte de corrutinas para Firebase Tasks (.await())
+    // Provee la extensión kotlinx.coroutines.tasks.await que usamos en los repositorios
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
+    // ──────────────────────────────────────────────────────────────────────────
 
     implementation("androidx.compose.material:material-icons-extended")
     implementation(platform(libs.androidx.compose.bom))

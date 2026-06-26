@@ -6,12 +6,17 @@ data class Product(
     val category: String,
     val stock: Int,
     val minStock: Int = 5,
-    val unitPrice: Double,       // precio de venta
-    val purchasePrice: Double?,  // precio de compra (opcional)
-    val sku: String = "",        // código único por producto
-    val supplier: String?,       // nombre del proveedor
+    val unitPrice: Double,
+    val purchasePrice: Double?,
+    val sku: String = "",
+    val supplier: String?,
     val expirationDate: String?,
     val description: String?,
+    // Campos Tabla 21 del PDF
+    val codigoBarras: String? = null,
+    val imagenUrl: String? = null,
+    val visible: Boolean = true,
+    val userId: String = "",
     val createdAt: Long,
     val updatedAt: Long
 ) {
@@ -24,7 +29,6 @@ data class Product(
     val inventoryValue: Double
         get() = stock * unitPrice
 
-    // Margen calculado solo cuando existe precio de compra
     val margin: Double?
         get() = purchasePrice?.let { cost ->
             if (cost > 0) ((unitPrice - cost) / cost) * 100 else null
@@ -40,8 +44,6 @@ data class Product(
 
 enum class StockStatus { OK, LOW, OUT_OF_STOCK }
 
-// Categorías predefinidas del MVP
 val PredefinedCategories = listOf(
-    "Abarrotes", "Bebidas", "Lácteos", "Panadería",
-    "Limpieza", "Snacks", "Frutas", "Otros"
+    "Men's clothing", "Women's clothing", "Electronics", "Jewelery", "Otros"
 )

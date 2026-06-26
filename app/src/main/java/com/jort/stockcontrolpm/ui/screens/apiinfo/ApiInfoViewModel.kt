@@ -56,6 +56,7 @@ class ApiInfoViewModel(
                 supplier       = "FakeStore API",
                 expirationDate = null,
                 description    = external.description,
+                imagenUrl      = external.imageUrl,
                 createdAt      = now,
                 updatedAt      = now
             )

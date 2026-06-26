@@ -23,7 +23,6 @@ public class MovementEntity {
 
     public long productId;
 
-    // Snapshot del nombre al momento del movimiento
     @NonNull
     public String productName;
 
@@ -44,6 +43,10 @@ public class MovementEntity {
     @Nullable
     public String notes;
 
+    // Referencia a la venta que originó este movimiento (Tabla 22 PDF)
+    @Nullable
+    public String ventaId;
+
     public MovementEntity(
             long id,
             long productId,
@@ -53,7 +56,8 @@ public class MovementEntity {
             @NonNull String reason,
             long date,
             @NonNull String userId,
-            @Nullable String notes
+            @Nullable String notes,
+            @Nullable String ventaId
     ) {
         this.id = id;
         this.productId = productId;
@@ -64,5 +68,6 @@ public class MovementEntity {
         this.date = date;
         this.userId = userId;
         this.notes = notes;
+        this.ventaId = ventaId;
     }
 }

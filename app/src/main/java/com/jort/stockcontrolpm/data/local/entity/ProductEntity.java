@@ -20,15 +20,12 @@ public class ProductEntity {
     public int minStock;
     public double unitPrice;
 
-    // Precio de compra (opcional); null si no se registra
     @Nullable
     public Double purchasePrice;
 
-    // Código único por producto (SKU)
     @NonNull
     public String sku;
 
-    // Proveedor (opcional)
     @Nullable
     public String supplier;
 
@@ -37,6 +34,18 @@ public class ProductEntity {
 
     @Nullable
     public String description;
+
+    // Campos Tabla 21 del PDF (Diseño de datos)
+    @Nullable
+    public String codigoBarras;
+
+    @Nullable
+    public String imagenUrl;
+
+    public boolean visible = true;
+
+    @NonNull
+    public String userId = "";
 
     public long createdAt;
     public long updatedAt;
@@ -53,6 +62,10 @@ public class ProductEntity {
             @Nullable String supplier,
             @Nullable String expirationDate,
             @Nullable String description,
+            @Nullable String codigoBarras,
+            @Nullable String imagenUrl,
+            boolean visible,
+            @NonNull String userId,
             long createdAt,
             long updatedAt
     ) {
@@ -67,6 +80,10 @@ public class ProductEntity {
         this.supplier = supplier;
         this.expirationDate = expirationDate;
         this.description = description;
+        this.codigoBarras = codigoBarras;
+        this.imagenUrl = imagenUrl;
+        this.visible = visible;
+        this.userId = userId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
